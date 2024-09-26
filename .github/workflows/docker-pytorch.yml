@@ -66,3 +66,11 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Make the image public using GitHub API
+        run: |
+          curl -X PATCH \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/orgs/${{ github.repository_owner }}/packages/container/${{ github.repository }}/visibility \
+          -d '{"visibility":"public"}'
