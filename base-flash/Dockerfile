@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="nvidia/cuda:12.2.2-devel-ubuntu22.04"
+ARG BASE_IMAGE="nvidia/cuda:11.8.0-devel-ubuntu22.04"
 
 FROM ${BASE_IMAGE}
 
@@ -41,8 +41,8 @@ RUN chmod -R 777 /opt/conda
 RUN ssh-keygen -A
 EXPOSE 22
 
-COPY experimental/user-entrypoint.sh /tmp/user-entrypoint.sh
-COPY experimental/.bashrc /tmp/.bashrc
+COPY base/user-entrypoint.sh /tmp/user-entrypoint.sh
+COPY base/.bashrc /tmp/.bashrc
 RUN chmod +x /tmp/user-entrypoint.sh
 
 ENTRYPOINT ["/tmp/user-entrypoint.sh"]
