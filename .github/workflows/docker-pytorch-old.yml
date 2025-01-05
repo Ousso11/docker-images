@@ -1,11 +1,11 @@
 
-name: pytorch-new
+name: pytorch-old
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
   REGISTRY: ghcr.io
-  CONTEXT: pytorch-new
-  IMAGE_NAME: ${{ github.repository }}/pytorch-new
+  CONTEXT: pytorch-old
+  IMAGE_NAME: ${{ github.repository }}/pytorch-old
 
 
 # Configures this workflow to run every time the "base" workflow was successfully completed

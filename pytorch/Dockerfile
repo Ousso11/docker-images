@@ -15,6 +15,7 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     mamba clean -y --all && \
     pip install -r /tmp/requirements.txt --no-cache-dir &&\
     rm /tmp/requirements.txt && \
+    pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
     chmod -R 777 /opt/conda/envs/default
 
     # install ngrok
