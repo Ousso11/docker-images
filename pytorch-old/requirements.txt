@@ -19,3 +19,4 @@ nltk==3.7
 absl-py==1.4.0
 rouge-score==0.1.2
 unsloth==2024.10.6
+openpyxl
