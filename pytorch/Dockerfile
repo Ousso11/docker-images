@@ -19,8 +19,10 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     rm /tmp/requirements.txt && \
     pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
     chmod -R 777 /opt/conda/envs/default
-
     # install ngrok
+
+RUN conda install -c nvidia  -y nccl
+
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 	| sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
 	&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
