@@ -9,7 +9,8 @@ RUN /opt/conda/bin/mamba env create -f /tmp/environment.yml -n default && \
     /opt/conda/bin/mamba clean -y --all
 RUN rm /tmp/environment.yml
 
-RUN apt install libopenmpi-dev
+RUN apt install -y libopenmpi-dev
+
 # install requirements
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate default && \
