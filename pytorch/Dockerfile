@@ -14,6 +14,7 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate default && \
     mamba clean -y --all && \
     pip install -r /tmp/requirements.txt --no-cache-dir &&\
+    sudo dnf install openmpi-devel &&\
     rm /tmp/requirements.txt && \
     pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
     chmod -R 777 /opt/conda/envs/default
