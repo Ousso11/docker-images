@@ -9,11 +9,11 @@ RUN /opt/conda/bin/mamba env create -f /tmp/environment.yml -n default && \
     /opt/conda/bin/mamba clean -y --all
 RUN rm /tmp/environment.yml
 
+RUN dnf install openmpi-devel 
 # install requirements
 RUN . /opt/conda/etc/profile.d/conda.sh && \
     conda activate default && \
     mamba clean -y --all && \
-    sudo dnf install openmpi-devel &&\
     pip install -r /tmp/requirements.txt --no-cache-dir &&\
     rm /tmp/requirements.txt && \
     pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
