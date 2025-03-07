@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="ghcr.io/ousso11/docker-images/base:main"
+ARG BASE_IMAGE="ghcr.io/ousso11/docker-images/base:kamel"
 
 FROM ${BASE_IMAGE}
 
