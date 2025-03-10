@@ -2,14 +2,7 @@
 name: llm_env
 channels:
   - conda-forge
-  - nvidia
-  - pytorch
 
 dependencies:
   - python=3.11
   - ipywidgets
-  - pytorch
-  - pytorch-cuda=12.1
-  - pip
-  - pip:
-    - flash-attn
