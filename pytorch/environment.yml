@@ -6,7 +6,8 @@ channels:
 dependencies:
   - python=3.11
   - ipywidgets
-  - torch
+  - pytorch
+  - pytorch-cuda=12.1
   - pip
   - pip:
     - flash-attn --no-cache-dir
