@@ -22,7 +22,7 @@ evaluate==0.4.3
 nltk==3.7
 absl-py==1.4.0
 rouge-score==0.1.2
-vllm==0.7.2
+vllm==0.8.2
 deepspeed==0.16.3
 mpi4py==4.0.2
 #accelerate==1.2.0
