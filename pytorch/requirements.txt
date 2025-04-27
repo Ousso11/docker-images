@@ -10,7 +10,7 @@ transformers==4.48.3
 datasets==3.5.0
 accelerate==1.6.0 
 peft==0.15.0 
-trl==0.16.1
+trl==0.17.0
 bitsandbytes==0.45.3
 wandb==0.19.6
 pyarrow==15.0.0 
