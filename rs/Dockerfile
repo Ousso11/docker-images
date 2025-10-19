@@ -6,7 +6,7 @@
 # Use the rs_base image as foundation
 ARG REGISTRY=ghcr.io
 ARG REPO=ousso11/docker-images
-ARG BASE_TAG=latest
+ARG BASE_TAG=main
 FROM ${REGISTRY}/ousso11/docker-images/rs_base:${BASE_TAG}
 
 # Set working directory
