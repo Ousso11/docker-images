@@ -6,11 +6,10 @@
 # ===== DEEP LEARNING & AI CORE =====
 torch>=2.0.0,<3.0.0
 torchvision>=0.15.0
-torchaudio>=2.0.0
 torch_geometric==2.6.1
 transformers==4.56.2
 accelerate==1.10.1
-vllm==0.10.2
+# vllm==0.10.2
 tokenizers==0.22.1
 
 # ===== SCIENTIFIC COMPUTING =====
