@@ -2,6 +2,13 @@ ARG BASE_IMAGE="nvidia/cuda:12.4.0-devel-ubuntu22.04"
 
 FROM ${BASE_IMAGE}
 
+# Copy disk space cleanup script
+COPY free_disk_space.sh /app/free_disk_space.sh
+RUN chmod +x /app/free_disk_space.sh
+
+# Free space before heavy installations
+RUN /app/free_disk_space.sh
+
 USER root
 RUN apt-get update && \
    apt-get install -y  --no-install-recommends  \

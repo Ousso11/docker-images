@@ -6,6 +6,13 @@
 # Use official PyTorch image with CUDA support
 FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-devel
 
+# Copy disk space cleanup script
+COPY ../free_disk_space.sh /app/free_disk_space.sh
+RUN chmod +x /app/free_disk_space.sh
+
+# Free space before heavy installations
+RUN /app/free_disk_space.sh
+
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1

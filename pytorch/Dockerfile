@@ -2,9 +2,17 @@ ARG BASE_IMAGE="ghcr.io/ousso11/docker-images/base:main"
 
 FROM ${BASE_IMAGE}
 
+# Copy disk space cleanup script
+COPY free_disk_space.sh /app/free_disk_space.sh
+RUN chmod +x /app/free_disk_space.sh
+
 # install conda environment
 COPY pytorch/environment.yml /tmp/environment.yml
 COPY pytorch/requirements.txt /tmp/requirements.txt
+
+# Free space before heavy installations
+RUN /app/free_disk_space.sh
+
 RUN /opt/conda/bin/mamba env create -f /tmp/environment.yml -n default && \
     /opt/conda/bin/mamba clean -y --all
 RUN rm /tmp/environment.yml

@@ -12,11 +12,14 @@ FROM ${REGISTRY}/ousso11/docker-images/rs_base:${BASE_TAG}
 # Set working directory
 WORKDIR /app
 
-# Copy requirements file
-COPY rs/requirements.txt .
+# Copy installation scripts
+COPY install_requirements_chunked.sh /app/install_requirements_chunked.sh
+COPY ../free_disk_space.sh /app/free_disk_space.sh
+COPY requirements.txt /app/requirements.txt
 
-# Install all requirements with optimized chunking
-RUN pip install --no-cache-dir -r requirements.txt && pip cache purge
+# Make scripts executable and install requirements
+RUN chmod +x /app/install_requirements_chunked.sh /app/free_disk_space.sh && \
+    /app/install_requirements_chunked.sh
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
