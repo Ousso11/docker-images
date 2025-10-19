@@ -34,51 +34,22 @@ RUN apt-get update && apt-get install -y \
     libgomp1 \
     graphviz \
     graphviz-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/tmp/*
 
 # Upgrade pip and install wheel
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip setuptools wheel && pip cache purge
 
-# Copy requirements file and install script
-COPY rs/requirements.txt .
-COPY rs/install_requirements.sh .
-
-# Make install script executable
-RUN chmod +x install_requirements.sh
-
-# Install PyTorch first with CUDA support
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
-# Install remaining requirements using the chunked script
-RUN ./install_requirements.sh
-
-# Create necessary directories
-RUN mkdir -p /app/data /app/logs /app/outputs
-
-# Copy application code
-COPY .. /app/
+# Install PyTorch with CUDA support (already compatible with base image)
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
+    && pip cache purge \
+    && rm -rf /tmp/* /var/tmp/* \
+    && apt-get clean
 
 # Set Python path to include the app directory
 ENV PYTHONPATH=/app
 
-# Expose ports for FastAPI and Gradio
-EXPOSE 8000 7860
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'CUDA devices: {torch.cuda.device_count()}')" || exit 1
-
 # Default command
 CMD ["bash"]
 
-# ===========================
-# Build Instructions:
-# docker build -t rs-relation-search:latest .
-# 
-# Run Instructions:
-# docker run --gpus all -it --rm \
-#   -v $(pwd)/data:/app/data \
-#   -v $(pwd)/outputs:/app/outputs \
-#   -p 8000:8000 -p 7860:7860 \
-#   rs-relation-search:latest
-# ===========================
