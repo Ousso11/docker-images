@@ -50,6 +50,9 @@ RUN pip install torch torchvision torchaudio --index-url https://download.pytorc
 # Set Python path to include the app directory
 ENV PYTHONPATH=/app
 
-# Default command
-CMD ["bash"]
+RUN chmod +x /tmp/user-entrypoint.sh
+
+ENTRYPOINT ["/tmp/user-entrypoint.sh"]
+CMD ["/bin/bash"]
+
 
