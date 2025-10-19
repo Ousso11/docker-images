@@ -12,8 +12,11 @@ COPY pytorch/requirements.txt /tmp/requirements.txt
 # Free space before heavy installations
 RUN /app/free_disk_space.sh
 
-# Install Python packages directly with pip (simpler approach)
-RUN /opt/conda/bin/pip install -r /tmp/requirements.txt --no-cache-dir && \
+# Verify conda installation and install Python packages
+RUN ls -la /opt/conda/bin/ && \
+    /opt/conda/bin/conda --version && \
+    /opt/conda/bin/pip --version && \
+    /opt/conda/bin/pip install -r /tmp/requirements.txt --no-cache-dir && \
     /opt/conda/bin/pip cache purge
 
 RUN apt-get update && apt-get install -y libopenmpi-dev && apt-get clean
