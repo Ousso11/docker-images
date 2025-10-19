@@ -40,7 +40,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --upgrade pip setuptools wheel
 
 # Copy requirements file
-COPY requirements.txt .
+COPY rs/requirements.txt .
 
 # Install Python dependencies with specific PyTorch CUDA version
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
@@ -55,7 +55,7 @@ RUN mkdir -p /app/data /app/logs /app/outputs
 COPY .. /app/
 
 # Set Python path to include the app directory
-ENV PYTHONPATH=/app:${PYTHONPATH}
+ENV PYTHONPATH=/app
 
 # Expose ports for FastAPI and Gradio
 EXPOSE 8000 7860
