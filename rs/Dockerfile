@@ -13,7 +13,7 @@ FROM ${REGISTRY}/ousso11/docker-images/rs_base:${BASE_TAG}
 WORKDIR /app
 
 # Copy requirements file
-COPY requirements.txt .
+COPY rs/requirements.txt .
 
 # Install all requirements with optimized chunking
 RUN pip install --no-cache-dir -r requirements.txt && pip cache purge
