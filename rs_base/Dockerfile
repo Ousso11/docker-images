@@ -1,6 +1,6 @@
 # ===========================
-# RS Relation Search - Unified Docker Image
-# CUDA 12.1 + Python 3.11 + PyTorch + All Dependencies
+# RS Relation Search - Base Image
+# Built from PyTorch official image with CUDA 12.1 support
 # ===========================
 
 # Use official PyTorch image with CUDA support
@@ -16,12 +16,24 @@ RUN /app/free_disk_space.sh
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV CUDA_HOME=/usr/local/cuda-12.1
+ENV PATH=/opt/conda/bin:${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
 # Set working directory
 WORKDIR /app
+
+# Aggressive cleanup of PyTorch cache and unnecessary files to free space
+RUN conda clean -all -f -y && \
+    pip cache purge && \
+    rm -rf /opt/conda/pkgs/* && \
+    rm -rf /tmp/* && \
+    rm -rf /var/tmp/* && \
+    find /opt/conda -name "*.pyc" -delete && \
+    find /opt/conda -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+
+# Free space after initial cleanup
+RUN /app/free_disk_space.sh
 
 # Update system packages and install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -47,12 +59,6 @@ RUN apt-get update && apt-get install -y \
 
 # Upgrade pip and install wheel
 RUN pip install --upgrade pip setuptools wheel && pip cache purge
-
-# Install PyTorch with CUDA support (already compatible with base image)
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
-    && pip cache purge \
-    && rm -rf /tmp/* /var/tmp/* \
-    && apt-get clean
 
 # Set Python path to include the app directory
 ENV PYTHONPATH=/app
