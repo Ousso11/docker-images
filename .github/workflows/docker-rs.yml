@@ -9,7 +9,7 @@ on:
   push:
     # Only trigger on tags that start with 'rs-'
     tags:        
-      - 'rs'
+      - 'rs-*'
 
 jobs:
   build-and-push-image:

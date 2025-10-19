@@ -1,25 +1,38 @@
 # ===========================
-# RS Relation Search - Full Image
-# Extends rs_base and installs all requirements
+# RS Relation Search - Complete Image
+# Built directly from PyTorch with CUDA and all requirements
 # ===========================
 
-# Use the rs_base image as foundation
-ARG REGISTRY=ghcr.io
-ARG REPO=ousso11/docker-images
-ARG BASE_TAG=main
-FROM ${REGISTRY}/ousso11/docker-images/rs_base:${BASE_TAG}
+# Use official PyTorch image with CUDA support directly
+FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
 
 # Set working directory
 WORKDIR /app
 
-# Copy installation scripts
-COPY install_requirements_chunked.sh /app/install_requirements_chunked.sh
-COPY ../free_disk_space.sh /app/free_disk_space.sh
-COPY requirements.txt /app/requirements.txt
+# Copy disk space cleanup script first
+COPY free_disk_space.sh /app/free_disk_space.sh
+RUN chmod +x /app/free_disk_space.sh
 
-# Make scripts executable and install requirements
-RUN chmod +x /app/install_requirements_chunked.sh /app/free_disk_space.sh && \
-    /app/install_requirements_chunked.sh
+# Aggressive cleanup of PyTorch cache to free space
+RUN conda clean -all -f -y && \
+    pip cache purge && \
+    rm -rf /opt/conda/pkgs/* && \
+    rm -rf /tmp/* /var/tmp/* && \
+    find /opt/conda -name "*.pyc" -delete && \
+    find /opt/conda -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+
+# Free space before installations
+RUN /app/free_disk_space.sh
+
+# Copy requirements and install directly with pip
+COPY rs/requirements.txt /app/requirements.txt
+
+# Install requirements with space management
+RUN /app/free_disk_space.sh && \
+    pip install --no-cache-dir -r /app/requirements.txt && \
+    pip cache purge && \
+    /app/free_disk_space.sh && \
+    rm /app/requirements.txt
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \

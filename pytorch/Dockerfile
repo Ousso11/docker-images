@@ -7,25 +7,20 @@ COPY free_disk_space.sh /app/free_disk_space.sh
 RUN chmod +x /app/free_disk_space.sh
 
 # install conda environment
-COPY pytorch/environment.yml /tmp/environment.yml
 COPY pytorch/requirements.txt /tmp/requirements.txt
 
 # Free space before heavy installations
 RUN /app/free_disk_space.sh
 
-# Check conda installation and use conda instead of mamba
-RUN /opt/conda/bin/conda env create -f /tmp/environment.yml -n default && \
-    /opt/conda/bin/conda clean -y --all
-RUN rm /tmp/environment.yml
+# Install Python packages directly with pip (simpler approach)
+RUN /opt/conda/bin/pip install -r /tmp/requirements.txt --no-cache-dir && \
+    /opt/conda/bin/pip cache purge
 
-RUN apt install -y libopenmpi-dev
+RUN apt-get update && apt-get install -y libopenmpi-dev && apt-get clean
 
 # install requirements
-RUN /opt/conda/bin/conda activate default && \
-    /opt/conda/bin/conda clean -y --all && \
-    /opt/conda/envs/default/bin/pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
-    chmod -R 777 /opt/conda/envs/default  && \
-    /opt/conda/envs/default/bin/pip install -r /tmp/requirements.txt --no-cache-dir &&\
+RUN /opt/conda/bin/pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
+    /opt/conda/bin/pip cache purge && \
     rm /tmp/requirements.txt
     
 
