@@ -7,7 +7,7 @@
 ARG REGISTRY=ghcr.io
 ARG REPO=ousso11/docker-images
 ARG BASE_TAG=latest
-FROM ${REGISTRY}/${REPO}/rs_base:${BASE_TAG}
+FROM ${REGISTRY}/ousso11/docker-images/rs_base:${BASE_TAG}
 
 # Set working directory
 WORKDIR /app

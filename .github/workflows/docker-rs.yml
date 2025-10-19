@@ -62,7 +62,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             REGISTRY=${{ env.REGISTRY }}
-            REPO=${{ github.repository }}
+            REPO=ousso11/docker-images
             BASE_TAG=latest
 
       - name: Make the image public using GitHub API
