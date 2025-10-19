@@ -39,14 +39,18 @@ RUN apt-get update && apt-get install -y \
 # Upgrade pip and install wheel
 RUN pip install --upgrade pip setuptools wheel
 
-# Copy requirements file
+# Copy requirements file and install script
 COPY rs/requirements.txt .
+COPY rs/install_requirements.sh .
 
-# Install Python dependencies with specific PyTorch CUDA version
+# Make install script executable
+RUN chmod +x install_requirements.sh
+
+# Install PyTorch first with CUDA support
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-# Install remaining requirements
-RUN pip install -r requirements.txt
+# Install remaining requirements using the chunked script
+RUN ./install_requirements.sh
 
 # Create necessary directories
 RUN mkdir -p /app/data /app/logs /app/outputs
