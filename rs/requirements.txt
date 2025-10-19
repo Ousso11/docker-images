@@ -4,8 +4,7 @@
 # ===========================
 
 # ===== DEEP LEARNING & AI CORE =====
-torch>=2.0.0,<3.0.0
-torchvision>=0.15.0
+# torch and torchvision are already included in PyTorch base image
 torch_geometric==2.6.1
 transformers==4.56.2
 accelerate==1.10.1

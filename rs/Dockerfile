@@ -3,8 +3,8 @@
 # Built directly from PyTorch with CUDA and all requirements
 # ===========================
 
-# Use official PyTorch image with CUDA support directly
-FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
+# Use official PyTorch image with CUDA support directly - Latest version
+FROM pytorch/pytorch:2.9.0-cuda12.6-cudnn8-runtime
 
 # Set working directory
 WORKDIR /app
