@@ -14,20 +14,18 @@ COPY pytorch/requirements.txt /tmp/requirements.txt
 RUN /app/free_disk_space.sh
 
 # Check conda installation and use conda instead of mamba
-RUN . /opt/conda/etc/profile.d/conda.sh && \
-    conda env create -f /tmp/environment.yml -n default && \
-    conda clean -y --all
+RUN /opt/conda/bin/conda env create -f /tmp/environment.yml -n default && \
+    /opt/conda/bin/conda clean -y --all
 RUN rm /tmp/environment.yml
 
 RUN apt install -y libopenmpi-dev
 
 # install requirements
-RUN . /opt/conda/etc/profile.d/conda.sh && \
-    conda activate default && \
-    conda clean -y --all && \
-    pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
+RUN /opt/conda/bin/conda activate default && \
+    /opt/conda/bin/conda clean -y --all && \
+    /opt/conda/envs/default/bin/pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
     chmod -R 777 /opt/conda/envs/default  && \
-    pip install -r /tmp/requirements.txt --no-cache-dir &&\
+    /opt/conda/envs/default/bin/pip install -r /tmp/requirements.txt --no-cache-dir &&\
     rm /tmp/requirements.txt
     
 
