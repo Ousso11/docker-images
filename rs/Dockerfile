@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages using the full path to pip and requirements
-RUN /opt/conda/bin/pip install --no-cache-dir --user -r /tmp/requirements.txt && \
+RUN /opt/conda/bin/pip install --no-cache-dir --user --no-warn-script-location -r /tmp/requirements.txt && \
     /opt/conda/bin/pip cache purge && \
     rm /tmp/requirements.txt
 
@@ -35,9 +35,13 @@ COPY --from=builder /root/.local /root/.local
 # Make sure scripts in .local are usable:
 ENV PATH=/root/.local/bin:$PATH
 
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Minimal runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
+    openssh-server \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -46,16 +50,15 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'CUDA devices: {torch.cuda.device_count()}')" || exit 1
 
 # Default command
-CMD ["bash"]
+# CMD ["bash"]
 
-# ===========================
-# Build Instructions:
-# docker build -t rs-full:latest .
-# 
-# Run Instructions:
-# docker run --gpus all -it --rm \
-#   -v $(pwd)/data:/app/data \
-#   -v $(pwd)/outputs:/app/outputs \
-#   -p 8000:8000 -p 7860:7860 \
-#   rs-full:latest
-# ===========================
+# setup ssh
+RUN ssh-keygen -A
+EXPOSE 22
+
+COPY base/user-entrypoint.sh /tmp/user-entrypoint.sh
+COPY base/.bashrc /tmp/.bashrc
+RUN chmod +x /tmp/user-entrypoint.sh
+
+ENTRYPOINT ["/tmp/user-entrypoint.sh"]
+CMD ["/bin/bash"]

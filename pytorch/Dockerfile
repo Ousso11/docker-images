@@ -31,7 +31,7 @@ RUN /opt/conda/bin/pip install "unsloth[colab-new] @ git+https://github.com/unsl
     rm /app/requirements.txt
     
 
-    # install ngrok
+# install ngrok
 RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 	| sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
 	&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
@@ -40,5 +40,5 @@ RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 	&& sudo apt install ngrok
 
 RUN . /opt/conda/etc/profile.d/conda.sh && \
-     conda activate default && conda install -c nvidia -y nccl
+     conda activate base && conda install -c nvidia -y nccl
 
