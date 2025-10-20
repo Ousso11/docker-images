@@ -1,10 +1,10 @@
 # ===========================
 # RS Relation Search - Complete Image
-# Built directly from PyTorch with CUDA 12.4 and all requirements
+# Built from lighter PyTorch with CUDA 12.4 and all requirements
 # ===========================
 
-# Use PyTorch image with CUDA 12.4 support - Compatible version
-FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime
+# Use lighter PyTorch image with CUDA 12.4 support - Devel version (more stable downloads)
+FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-devel
 
 # Set working directory
 WORKDIR /app
