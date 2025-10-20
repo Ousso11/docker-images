@@ -58,20 +58,18 @@ RUN . /opt/conda/etc/profile.d/conda.sh
 # make conda install writable
 RUN chmod -R 777 /opt/conda
 
+# Copy requirements first
+COPY rs/requirements.txt /app/requirements.txt
 
-# install pytorch and torchvision with cuda support
-RUN /opt/conda/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 --no-cache-dir && \
-    /opt/conda/bin/pip cache purge
-
-# install conda environment - copy requirements to a safe location
-COPY pytorch/requirements.txt /app/requirements.txt
-
-# Verify conda installation and install Python packages
+# install dependencies
 RUN ls -la /opt/conda/bin/ && \
     /opt/conda/bin/conda --version && \
     /opt/conda/bin/pip --version && \
+    echo "=====> Installing all packages with CUDA-enabled PyTorch..." && \
     /opt/conda/bin/pip install -r /app/requirements.txt --no-cache-dir && \
-    /opt/conda/bin/pip cache purge
+    echo "=====> Cleaning up pip cache..." && \
+    /opt/conda/bin/pip cache purge && \
+    echo "=====> Installation complete!"
 
 # setup ssh
 RUN ssh-keygen -A

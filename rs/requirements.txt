@@ -4,7 +4,10 @@
 # ===========================
 
 # ===== DEEP LEARNING & AI CORE =====
-# torch and torchvision are already included in PyTorch base image
+# PyTorch with CUDA 12.4 support - installed from PyTorch wheel index
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
 torch_geometric==2.6.1
 transformers==4.56.2
 accelerate==1.10.1
