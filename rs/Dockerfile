@@ -54,6 +54,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-server \
     ldap-utils \
     gosu \
+    sudo \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
