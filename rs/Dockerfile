@@ -53,6 +53,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     openssh-server \
     ldap-utils \
+    gosu \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -67,10 +68,9 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 RUN ssh-keygen -A
 EXPOSE 22
 
-# Copy entrypoint and config to permanent locations (NOT /tmp!)
-COPY base/user-entrypoint.sh /usr/local/bin/user-entrypoint.sh
-COPY base/.bashrc /etc/skel/.bashrc
-RUN chmod +x /usr/local/bin/user-entrypoint.sh
+COPY base/user-entrypoint.sh /tmp/user-entrypoint.sh
+COPY base/.bashrc /tmp/.bashrc
+RUN chmod +x /tmp/user-entrypoint.sh
 
-ENTRYPOINT ["/usr/local/bin/user-entrypoint.sh"]
+ENTRYPOINT ["/tmp/user-entrypoint.sh"]
 CMD ["/bin/bash"]

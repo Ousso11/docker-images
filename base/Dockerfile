@@ -54,10 +54,9 @@ RUN chmod -R 777 /opt/conda
 RUN ssh-keygen -A
 EXPOSE 22
 
-# Copy entrypoint and config to permanent locations (NOT /tmp!)
-COPY base/user-entrypoint.sh /usr/local/bin/user-entrypoint.sh
-COPY base/.bashrc /etc/skel/.bashrc
-RUN chmod +x /usr/local/bin/user-entrypoint.sh
+COPY base/user-entrypoint.sh /tmp/user-entrypoint.sh
+COPY base/.bashrc /tmp/.bashrc
+RUN chmod +x /tmp/user-entrypoint.sh
 
-ENTRYPOINT ["/usr/local/bin/user-entrypoint.sh"]
+ENTRYPOINT ["/tmp/user-entrypoint.sh"]
 CMD ["/bin/bash"]
