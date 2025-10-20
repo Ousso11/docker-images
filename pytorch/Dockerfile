@@ -12,14 +12,18 @@ COPY pytorch/requirements.txt /app/requirements.txt
 # Free space before heavy installations
 RUN /app/free_disk_space.sh
 
+# Install MPI development libraries BEFORE pip install (needed for mpi4py)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libopenmpi-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
 # Verify conda installation and install Python packages
 RUN ls -la /opt/conda/bin/ && \
     /opt/conda/bin/conda --version && \
     /opt/conda/bin/pip --version && \
     /opt/conda/bin/pip install -r /app/requirements.txt --no-cache-dir && \
     /opt/conda/bin/pip cache purge
-
-RUN apt-get update && apt-get install -y libopenmpi-dev && apt-get clean
 
 # install requirements
 RUN /opt/conda/bin/pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
