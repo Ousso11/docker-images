@@ -7,7 +7,7 @@ The original PyTorch Docker image was causing "no space left on device" errors o
 ## Current Setup
 
 ### GitHub Actions Configuration:
-- **Runner**: `ubuntu-latest-8-cores` (32GB RAM, 8 cores, 14GB disk)
+- **Runner**: `ubuntu-latest-4-cores` (16GB RAM, 4 cores, 14GB disk)
 - **Enhanced disk cleanup**: Removes unnecessary tools before build
 - **Docker BuildKit**: Enabled with caching for efficient builds
 - **Platform**: Single linux/amd64 platform to save space
@@ -29,15 +29,15 @@ The original PyTorch Docker image was causing "no space left on device" errors o
 ### Image Sizes:
 - **Original approach**: ~15-20GB (failed to build)
 - **Current optimized**: ~5-8GB final image
-- **Build efficiency**: Uses 8-core runner for faster builds
+- **Build efficiency**: Uses 4-core runner for balanced performance and cost
 
 ## GitHub Actions Runner Specs:
 
 | Runner Type | Disk Space | RAM | CPU | Status |
 |-------------|------------|-----|-----|--------|
 | ubuntu-latest | 14GB | 7GB | 2 cores | ❌ Too slow |
-| ubuntu-latest-4-cores | 14GB | 16GB | 4 cores | ⚠️ Better but still slow |
-| **ubuntu-latest-8-cores** | **14GB** | **32GB** | **8 cores** | ✅ **CURRENT** |
+| **ubuntu-latest-4-cores** | **14GB** | **16GB** | **4 cores** | ✅ **CURRENT** |
+| ubuntu-latest-8-cores | 14GB | 32GB | 8 cores | ⚠️ Overkill for this build |
 
 ## Build Process:
 
@@ -60,7 +60,7 @@ docker run --gpus all -it --rm rs-local python -c "import torch; print(f'CUDA: {
 ```
 
 ## Expected Results:
-- ✅ **Builds successfully** on GitHub Actions 8-core runner
+- ✅ **Builds successfully** on GitHub Actions 4-core runner
 - ✅ **~5-8GB final image** (vs original ~15-20GB)
-- ✅ **Faster builds** with 8 cores and caching
+- ✅ **Balanced performance** with 4 cores and caching
 - ✅ **Full CUDA support** maintained in runtime image
