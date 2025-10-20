@@ -1,38 +1,45 @@
 # ===========================
-# RS Relation Search - Complete Image
-# Built from stable PyTorch with CUDA support and all requirements
+# RS Relation Search - Optimized Multi-stage Build
+# Built from stable PyTorch with CUDA support and minimal runtime footprint
 # ===========================
 
-# Use stable PyTorch devel image - needed for building packages
-FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-devel
+# Stage 1: Builder stage with full development environment
+FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-devel AS builder
 
-# Set working directory
+WORKDIR /build
+
+# Copy requirements to the expected location
+COPY rs/requirements.txt /tmp/requirements.txt
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages using the full path to pip and requirements
+RUN /opt/conda/bin/pip install --no-cache-dir --user -r /tmp/requirements.txt && \
+    /opt/conda/bin/pip cache purge && \
+    rm /tmp/requirements.txt
+
+# ===========================
+# Stage 2: Runtime stage with minimal runtime environment
+# ===========================
+FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime AS runtime
+
 WORKDIR /app
 
-# Copy disk space cleanup script first
-COPY free_disk_space.sh /app/free_disk_space.sh
-RUN chmod +x /app/free_disk_space.sh
+# Copy only the installed packages from builder
+COPY --from=builder /root/.local /root/.local
 
-# Aggressive cleanup of PyTorch cache to free space
-RUN conda clean -all -f -y && \
-    pip cache purge && \
-    rm -rf /opt/conda/pkgs/* && \
-    rm -rf /tmp/* /var/tmp/* && \
-    find /opt/conda -name "*.pyc" -delete && \
-    find /opt/conda -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+# Make sure scripts in .local are usable:
+ENV PATH=/root/.local/bin:$PATH
 
-# Free space before installations
-RUN /app/free_disk_space.sh
-
-# Copy requirements and install directly with pip
-COPY rs/requirements.txt /app/requirements.txt
-
-# Install requirements with space management
-RUN /app/free_disk_space.sh && \
-    pip install --no-cache-dir -r /app/requirements.txt && \
-    pip cache purge && \
-    /app/free_disk_space.sh && \
-    rm /app/requirements.txt
+# Minimal runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \

@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-and-push-image:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8-cores
     permissions:
       contents: read
       packages: write
@@ -22,6 +22,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      # === CRITICAL: Free up disk space first ===
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Additional cleanup and disk space check
+        run: |
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/share/dotnet || true
+          docker system prune -af || true
+          echo "Available disk space after cleanup:"
+          df -h /
         
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -39,19 +60,26 @@ jobs:
             type=raw,value=main
             type=raw,value={{tag}},enable={{is_default_branch}}
       
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
       - name: Build and push Docker image
         id: push
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ${{ env.CONTEXT }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64  # Single platform to save space
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             REGISTRY=${{ env.REGISTRY }}
             REPO=ousso11/docker-images
             BASE_TAG=latest
+            BUILDKIT_INLINE_CACHE=1
 
       - name: Make the image public using GitHub API
         run: |
