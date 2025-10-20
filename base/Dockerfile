@@ -40,6 +40,7 @@ RUN apt-get update && \
 # install Miniforge
 RUN wget -O /tmp/Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
     bash /tmp/Miniforge3.sh -b -p "/opt/conda" &&  rm /tmp/Miniforge3.sh
+    
 RUN . /opt/conda/etc/profile.d/conda.sh
 # make conda install writable
 RUN chmod -R 777 /opt/conda
