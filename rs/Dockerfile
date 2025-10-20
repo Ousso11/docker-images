@@ -4,7 +4,7 @@
 # ===========================
 
 # Use lighter PyTorch image with CUDA 12.4 support - Devel version (more stable downloads)
-FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-devel
+FROM pytorch/pytorch:2.8.0-cuda12.8-cudnn9-devel
 
 # Set working directory
 WORKDIR /app

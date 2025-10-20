@@ -37,13 +37,14 @@ if [ "$HAVE_SUDO" = true ]; then
     echo "🗑️  Removing /opt/hostedtoolcache (10+ GB)..."
     sudo rm -rf /opt/hostedtoolcache/* 2>/dev/null || true
     
-    # Remove other large /opt directories (12+ GB)  
+    # Remove other large /opt directories (12+ GB) - PROTECT /opt/conda!
     echo "🗑️  Removing other large /opt directories..."
     sudo find /opt -maxdepth 1 -mindepth 1 \
         '!' -path /opt/containerd \
         '!' -path /opt/actionarchivecache \
         '!' -path /opt/runner \
         '!' -path /opt/runner-cache \
+        '!' -path /opt/conda \
         -exec rm -rf '{}' ';' 2>/dev/null || true
     
     # Remove GitHub Actions specific packages
@@ -144,6 +145,7 @@ fi
 echo "🗑️  PHASE 4: Universal directory cleanups..."
 
 # Directories safe to remove in most environments
+# NOTE: /opt/conda and conda-related directories are protected
 directories_to_remove=(
     "/usr/share/gradle*"
     "/usr/share/maven*"
@@ -154,7 +156,6 @@ directories_to_remove=(
     "/usr/share/rust"
     "/root/.cargo"
     "/root/.rustup"
-    "/usr/share/miniconda"
     "/usr/lib/mono"
 )
 
