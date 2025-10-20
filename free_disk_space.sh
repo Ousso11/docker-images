@@ -170,8 +170,6 @@ echo "🗑️  PHASE 5: Universal cache cleanups..."
 
 # Remove various caches
 $CMD_PREFIX rm -rf /var/cache/* 2>/dev/null || true
-$CMD_PREFIX rm -rf /tmp/* 2>/dev/null || true
-$CMD_PREFIX rm -rf /var/tmp/* 2>/dev/null || true
 $CMD_PREFIX rm -rf /root/.cache/* 2>/dev/null || true
 $CMD_PREFIX rm -rf /home/*/.cache/* 2>/dev/null || true
 
