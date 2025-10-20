@@ -58,8 +58,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ldap-utils \
     gosu \
     sudo \
+    wget \
+    git \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
+
+# Initialize conda and make it writable for all users
+RUN . /opt/conda/etc/profile.d/conda.sh && \
+    chmod -R 777 /opt/conda
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
