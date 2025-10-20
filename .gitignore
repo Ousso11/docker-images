@@ -1,0 +1,15 @@
+# Environment variables (contains secrets)
+.env
+
+# Docker
+.dockerignore
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
