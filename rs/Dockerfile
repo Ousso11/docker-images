@@ -6,6 +6,11 @@
 # Stage 1: Builder stage with full development environment
 FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-devel AS builder
 
+# Link this image to the GitHub repository
+LABEL org.opencontainers.image.source="https://github.com/Ousso11/docker-images"
+LABEL org.opencontainers.image.description="Base image with CUDA 12.4 and development tools"
+LABEL org.opencontainers.image.licenses="MIT"
+
 WORKDIR /build
 
 # Copy requirements to the expected location
