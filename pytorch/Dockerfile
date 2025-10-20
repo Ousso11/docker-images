@@ -6,8 +6,8 @@ FROM ${BASE_IMAGE}
 COPY free_disk_space.sh /app/free_disk_space.sh
 RUN chmod +x /app/free_disk_space.sh
 
-# install conda environment
-COPY pytorch/requirements.txt /tmp/requirements.txt
+# install conda environment - copy requirements to a safe location
+COPY pytorch/requirements.txt /app/requirements.txt
 
 # Free space before heavy installations
 RUN /app/free_disk_space.sh
@@ -16,7 +16,7 @@ RUN /app/free_disk_space.sh
 RUN ls -la /opt/conda/bin/ && \
     /opt/conda/bin/conda --version && \
     /opt/conda/bin/pip --version && \
-    /opt/conda/bin/pip install -r /tmp/requirements.txt --no-cache-dir && \
+    /opt/conda/bin/pip install -r /app/requirements.txt --no-cache-dir && \
     /opt/conda/bin/pip cache purge
 
 RUN apt-get update && apt-get install -y libopenmpi-dev && apt-get clean
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y libopenmpi-dev && apt-get clean
 # install requirements
 RUN /opt/conda/bin/pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git" && \
     /opt/conda/bin/pip cache purge && \
-    rm /tmp/requirements.txt
+    rm /app/requirements.txt
     
 
     # install ngrok
