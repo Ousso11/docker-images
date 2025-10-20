@@ -2,6 +2,11 @@ ARG BASE_IMAGE="ghcr.io/ousso11/docker-images/base:main"
 
 FROM ${BASE_IMAGE}
 
+# Link this image to the GitHub repository
+LABEL org.opencontainers.image.source="https://github.com/Ousso11/docker-images"
+LABEL org.opencontainers.image.description="PyTorch image with CUDA support and ML libraries"
+LABEL org.opencontainers.image.licenses="MIT"
+
 # Copy disk space cleanup script
 COPY free_disk_space.sh /app/free_disk_space.sh
 RUN chmod +x /app/free_disk_space.sh

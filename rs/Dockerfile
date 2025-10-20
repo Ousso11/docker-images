@@ -27,6 +27,11 @@ RUN /opt/conda/bin/pip install --no-cache-dir --user --no-warn-script-location -
 # ===========================
 FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime AS runtime
 
+# Link this image to the GitHub repository
+LABEL org.opencontainers.image.source="https://github.com/Ousso11/docker-images"
+LABEL org.opencontainers.image.description="Relation Search image with PyTorch, CUDA, and SSH support"
+LABEL org.opencontainers.image.licenses="MIT"
+
 WORKDIR /app
 
 # Copy only the installed packages from builder
