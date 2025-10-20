@@ -1,71 +1,77 @@
-# ===========================
-# RS Relation Search - Optimized Multi-stage Build
-# Built from stable PyTorch with CUDA support and minimal runtime footprint
-# ===========================
+ARG BASE_IMAGE="nvidia/cuda:12.4.0-devel-ubuntu22.04"
 
-# Stage 1: Builder stage with full development environment
-FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-devel AS builder
+FROM ${BASE_IMAGE}
 
 # Link this image to the GitHub repository
 LABEL org.opencontainers.image.source="https://github.com/Ousso11/docker-images"
 LABEL org.opencontainers.image.description="Base image with CUDA 12.4 and development tools"
 LABEL org.opencontainers.image.licenses="MIT"
 
-WORKDIR /build
+# Copy disk space cleanup script
+COPY free_disk_space.sh /app/free_disk_space.sh
+RUN chmod +x /app/free_disk_space.sh
 
-# Copy requirements to the expected location
-COPY rs/requirements.txt /tmp/requirements.txt
+# Free space before heavy installations
+RUN /app/free_disk_space.sh
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python packages using the full path to pip and requirements
-RUN /opt/conda/bin/pip install --no-cache-dir --user --no-warn-script-location -r /tmp/requirements.txt && \
-    /opt/conda/bin/pip cache purge && \
-    rm /tmp/requirements.txt
-
-# ===========================
-# Stage 2: Runtime stage with minimal runtime environment
-# ===========================
-FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime AS runtime
-
-# Link this image to the GitHub repository
-LABEL org.opencontainers.image.source="https://github.com/Ousso11/docker-images"
-LABEL org.opencontainers.image.description="Relation Search image with PyTorch, CUDA, and SSH support"
-LABEL org.opencontainers.image.licenses="MIT"
-
-WORKDIR /app
-
-# Copy only the installed packages from builder
-COPY --from=builder /root/.local /root/.local
-
-# Make sure scripts in .local are usable:
-ENV PATH=/root/.local/bin:$PATH
-
-# Prevent interactive prompts during package installation
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Ensure we're running as root for setup
 USER root
-
-# Minimal runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    openssh-server \
-    ldap-utils \
-    gosu \
-    sudo \
-    wget \
+RUN apt-get update && \
+   apt-get install -y  --no-install-recommends  \
+    curl \
+    gcc \
     git \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    gosu \
+    git-lfs \
+    htop \
+    libgl1 \
+    libglib2.0-0 \
+    ncdu \
+    tree \
+    openssh-client \
+    openssh-server \
+    psmisc \
+    rsync \
+    screen \
+    sudo \
+    tmux \
+    unzip \
+    vim \
+    ldap-utils \
+    nvtop \
+    wget && \
+    wget -q  https://github.com/justjanne/powerline-go/releases/download/v1.24/powerline-go-linux-"$(dpkg --print-architecture)" -O /usr/local/bin/powerline-shell && \
+    chmod a+x /usr/local/bin/powerline-shell
 
+# install ngrok
+RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+	| sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+	&& echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+	| sudo tee /etc/apt/sources.list.d/ngrok.list \
+	&& sudo apt update \
+	&& sudo apt install ngrok
+
+# install Miniforge
+RUN wget -O /tmp/Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
+    bash /tmp/Miniforge3.sh -b -p "/opt/conda" &&  rm /tmp/Miniforge3.sh
+    
 RUN . /opt/conda/etc/profile.d/conda.sh
 # make conda install writable
 RUN chmod -R 777 /opt/conda
+
+
+# install pytorch and torchvision with cuda support
+RUN /opt/conda/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 --no-cache-dir && \
+    /opt/conda/bin/pip cache purge
+
+# install conda environment - copy requirements to a safe location
+COPY pytorch/requirements.txt /app/requirements.txt
+
+# Verify conda installation and install Python packages
+RUN ls -la /opt/conda/bin/ && \
+    /opt/conda/bin/conda --version && \
+    /opt/conda/bin/pip --version && \
+    /opt/conda/bin/pip install -r /app/requirements.txt --no-cache-dir && \
+    /opt/conda/bin/pip cache purge
 
 # setup ssh
 RUN ssh-keygen -A
