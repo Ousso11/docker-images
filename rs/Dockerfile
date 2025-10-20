@@ -63,16 +63,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Initialize conda and make it writable for all users
-RUN . /opt/conda/etc/profile.d/conda.sh && \
-    chmod -R 777 /opt/conda
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'CUDA devices: {torch.cuda.device_count()}')" || exit 1
-
-# Default command
-# CMD ["bash"]
+RUN . /opt/conda/etc/profile.d/conda.sh
+# make conda install writable
+RUN chmod -R 777 /opt/conda
 
 # setup ssh
 RUN ssh-keygen -A
