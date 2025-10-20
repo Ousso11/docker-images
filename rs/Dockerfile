@@ -48,6 +48,9 @@ ENV PATH=/root/.local/bin:$PATH
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Ensure we're running as root for setup
+USER root
+
 # Minimal runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
