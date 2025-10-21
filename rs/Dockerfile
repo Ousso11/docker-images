@@ -61,14 +61,19 @@ RUN chmod -R 777 /opt/conda
 # Copy requirements first
 COPY rs/requirements.txt /app/requirements.txt
 
-# install dependencies
-RUN ls -la /opt/conda/bin/ && \
-    /opt/conda/bin/conda --version && \
-    /opt/conda/bin/pip --version && \
+# Create conda environment 'rs' and install dependencies
+RUN . /opt/conda/etc/profile.d/conda.sh && \
+    echo "=====> Creating conda environment 'rs'..." && \
+    conda create -n rs python=3.11 -y && \
+    echo "=====> Activating rs environment..." && \
+    conda activate rs && \
+    echo "=====> Verifying environment..." && \
+    which python && python --version && \
+    which pip && pip --version && \
     echo "=====> Installing all packages with CUDA-enabled PyTorch..." && \
-    /opt/conda/bin/pip install -r /app/requirements.txt --no-cache-dir && \
+    pip install -r /app/requirements.txt --no-cache-dir && \
     echo "=====> Cleaning up pip cache..." && \
-    /opt/conda/bin/pip cache purge && \
+    pip cache purge && \
     echo "=====> Installation complete!"
 
 # setup ssh
@@ -78,6 +83,10 @@ EXPOSE 22
 COPY base/user-entrypoint.sh /tmp/user-entrypoint.sh
 COPY base/.bashrc /tmp/.bashrc
 RUN chmod +x /tmp/user-entrypoint.sh
+
+# Create custom .bashrc for rs environment
+RUN cp /tmp/.bashrc /tmp/.bashrc.rs && \
+    sed -i 's/conda activate default/conda activate rs/g' /tmp/.bashrc.rs
 
 ENTRYPOINT ["/tmp/user-entrypoint.sh"]
 CMD ["/bin/bash"]
